@@ -1,0 +1,21 @@
+{
+  "header": "include/my_api.h",
+  "doc_output": "docs/my_api.md",
+  "functions": [
+    {
+      "name": "add",
+      "return_type": "int",
+      "params": [
+        { "type": "int", "name": "a", "description": "First number to add" },
+        { "type": "int", "name": "b", "description": "Second number to add" }
+      ],
+      "description": "Adds two integers."
+    },
+    {
+      "name": "say_hello",
+      "return_type": "void",
+      "params": [],
+      "description": "Prints a greeting message."
+    }
+  ]
+}
