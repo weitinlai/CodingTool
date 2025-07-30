@@ -7,17 +7,29 @@ def generate_doxygen_comment(func):
     lines.append(" *")
     for param in func["params"]:
         lines.append(f" * @param {param['name']} {param['description']}")
-    lines.append(f" * @return {func['return_type']}")
+    lines.append(f" * @return {func['return_description']}")
     lines.append(" */")
     return "\n".join(lines)
 
-def generate_markdown_doc(funcs, output_path):
+def generate_markdown_doc(data, output_path):
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
     with open(output_path, "w") as f:
-        f.write(f"# 📘 API Documentation\n\n")
-        for func in funcs:
-            f.write(f"## `{func['name']}`\n")
+        f.write("# 📘 VSDKClient API Documentation\n\n")
+        f.write("This document describes the C API for the VSDKClient library.\n\n")
+        
+        # Data Types section
+        if "types" in data and data["types"]:
+            f.write("## Data Types\n\n")
+            for type_def in data["types"]:
+                f.write(f"### {type_def['name']}\n")
+                f.write(f"{type_def['description']}\n")
+                f.write(f"```c\n{type_def['type']};\n```\n\n")
+        
+        # Functions section
+        f.write("## Functions\n\n")
+        for func in data["functions"]:
+            f.write(f"### `{func['name']}`\n")
             f.write(f"**Description:** {func['description']}\n\n")
             f.write(f"**Declaration:**\n```c\n{func['return_type']} {func['name']}(")
             f.write(", ".join([f"{p['type']} {p['name']}" for p in func['params']]))
@@ -29,8 +41,8 @@ def generate_markdown_doc(funcs, output_path):
                     f.write(f"- `{p['name']}` ({p['type']}): {p['description']}\n")
                 f.write("\n")
 
-            f.write(f"**Returns:** `{func['return_type']}`\n\n---\n")
-
+            f.write(f"**Returns:** \n")
+            f.write(f"- `{func['return_type']}`: {func['return_description']}\n\n---\n")
     print(f"📄 Markdown doc '{output_path}' generated.")
 
 def generate_header(data):
@@ -41,12 +53,26 @@ def generate_header(data):
     with open(output_file, "w") as f:
         f.write("/* Auto-generated C API Header File */\n")
         f.write(f"#ifndef {guard}\n#define {guard}\n\n")
+        f.write("#ifdef __cplusplus\n")
+        f.write("extern \"C\" {\n")
+        f.write("#endif\n")
+        f.write("#include <stddef.h>\n\n")
 
+        # Type definitions
+        if "types" in data and data["types"]:
+            for type_def in data["types"]:
+                f.write(f"// {type_def['description']}\n")
+                f.write(f"{type_def['type']};\n\n")
+
+        # Function declarations
         for func in data["functions"]:
             f.write(generate_doxygen_comment(func) + "\n")
             params = ", ".join([f"{p['type']} {p['name']}" for p in func['params']])
             f.write(f"{func['return_type']} {func['name']}({params});\n\n")
 
+        f.write("#ifdef __cplusplus\n")
+        f.write("}\n")
+        f.write("#endif\n\n")
         f.write(f"#endif // {guard}\n")
 
     print(f"✅ Header file '{output_file}' generated.")
@@ -58,7 +84,7 @@ def main(json_path):
     generate_header(data)
 
     if "doc_output" in data:
-        generate_markdown_doc(data["functions"], data["doc_output"])
+        generate_markdown_doc(data, data["doc_output"])
 
 if __name__ == "__main__":
     import sys

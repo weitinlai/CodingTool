@@ -1,52 +1,86 @@
 {
   "header": "include/vsdkclient_api.h",
   "doc_output": "docs/vsdkclient_api.md",
+  "types": [
+    {
+      "name": "VClientHandle",
+      "type": "typedef struct VClientHandle_t* VClientHandle",
+      "description": "An opaque handle for the VClient instance."
+    }
+  ],
   "functions": [
     {
       "name": "VSDKClientInit",
-      "return_type": "int",
+      "return_type": "VClientHandle",
       "params": [],
-      "description": "Initializes the SDK client."
+      "description": "Initializes the SDK client.",
+      "return_description": "Client handle on success, NULL on failure"
     },
     {
       "name": "VSDKClientFinalize",
       "return_type": "int",
-      "params": [],
-      "description": "Finalizes the SDK client."
+      "params": [
+        { "type": "VClientHandle", "name": "handle", "description": "The client handle to finalize" }
+      ],
+      "description": "Finalizes the SDK client and releases resources.",
+      "return_description": "0 on successful finalization, 1 on abnormal condition"
     },
     {
       "name": "VSDKClientGetConfList",
       "return_type": "int",
       "params": [
-        { "type": "std::vector<std::string>", "name": "ipList", "description": "get conference IPs from BLE broadcasting" }
+        { "type": "VClientHandle", "name": "handle", "description": "The client handle" },
+        { "type": "char***", "name": "ipList", "description": "Output array of pointers to C strings containing IP addresses" },
+        { "type": "size_t*", "name": "ipCount", "description": "Pointer to number of IPs found" }
       ],
-      "description": "Gets the list of conference IPs."
+      "description": "Gets the list of conference IPs.",
+      "return_description": "0 on successful retrieval, 1 on abnormal condition"
     },
     {
       "name": "VSDKClientSelCamera",
       "return_type": "int",
       "params": [
-        { "type": "std::string", "name": "camName", "description": "Camera name to select, HD Camera" },
-        { "type": "std::string", "name": "videoSize", "description": "Video size to select, 1280x720" }
+        { "type": "VClientHandle", "name": "handle", "description": "The client handle" },
+        { "type": "const char*", "name": "camName", "description": "Camera name to select" },
+        { "type": "const char*", "name": "videoSize", "description": "Video size to select" },
+        { "type": "const char*", "name": "rtspPath", "description": "RTSP path to stream" }
       ],
-      "description": "Selects a camera."
+      "description": "Selects a camera and creates RTSP stream.",
+      "return_description": "0 on successful selection, 1 on abnormal condition"
     },
-    { "name": "VSDKClientConnect",
+    {
+      "name": "VSDKClientConnect",
       "return_type": "int",
       "params": [
-        { "type": "std::string", "name": "rtspPath", "description": "RTSP path to select, rtsp://192.168.1.10:8554/mystream" }
+        { "type": "VClientHandle", "name": "handle", "description": "The client handle" },
+        { "type": "const char*", "name": "rtspPath", "description": "RTSP path to stream to" },
+        { "type": "const char*", "name": "serverIp", "description": "Server IP address (e.g., \"10.4.48.77\")" }
       ],
-      "description": "Starts streaming from the selected camera."
+      "description": "Starts streaming from the selected camera.",
+      "return_description": "0 on successful connection, 1 on abnormal condition"
     },
     {
       "name": "VSDKClientRegister",
       "return_type": "int",
       "params": [
-        { "type": "std::string", "name": "name", "description": "Registry name" },
-        { "type": "std::string", "name": "title", "description": "Registry title" },
-        { "type": "std::vector<std::string>", "name": "photoFiles", "description": "List of photo file paths" }
+        { "type": "VClientHandle", "name": "handle", "description": "The client handle" },
+        { "type": "const char*", "name": "name", "description": "Registry name" },
+        { "type": "const char*", "name": "title", "description": "Registry title" },
+        { "type": "const char**", "name": "photoFiles", "description": "List of photo file paths" },
+        { "type": "size_t", "name": "photoCount", "description": "Number of photo files" },
+        { "type": "const char*", "name": "serverIp", "description": "Server IP address (e.g., \"10.4.48.77\")" }
       ],
-      "description": "Registers a new joiner with the conference."
+      "description": "Registers a new joiner with the conference.",
+      "return_description": "0 on successful registration, 1 on abnormal condition"
+    },
+    {
+      "name": "VSDKClientDisconnect",
+      "return_type": "int",
+      "params": [
+        { "type": "VClientHandle", "name": "handle", "description": "The client handle" }
+      ],
+      "description": "Disconnects/stops streaming for the given client handle.",
+      "return_description": "0 on successful disconnection, 1 on abnormal condition"
     }
   ]
 }
