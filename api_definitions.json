@@ -1,21 +1,52 @@
 {
-  "header": "include/my_api.h",
-  "doc_output": "docs/my_api.md",
+  "header": "include/vsdkclient_api.h",
+  "doc_output": "docs/vsdkclient_api.md",
   "functions": [
     {
-      "name": "add",
+      "name": "VSDKClientInit",
       "return_type": "int",
-      "params": [
-        { "type": "int", "name": "a", "description": "First number to add" },
-        { "type": "int", "name": "b", "description": "Second number to add" }
-      ],
-      "description": "Adds two integers."
+      "params": [],
+      "description": "Initializes the SDK client."
     },
     {
-      "name": "say_hello",
-      "return_type": "void",
+      "name": "VSDKClientFinalize",
+      "return_type": "int",
       "params": [],
-      "description": "Prints a greeting message."
+      "description": "Finalizes the SDK client."
+    },
+    {
+      "name": "VSDKClientGetConfList",
+      "return_type": "int",
+      "params": [
+        { "type": "std::vector<std::string>", "name": "ipList", "description": "get conference IPs from BLE broadcasting" }
+      ],
+      "description": "Gets the list of conference IPs."
+    },
+    {
+      "name": "VSDKClientSelCamera",
+      "return_type": "int",
+      "params": [
+        { "type": "std::string", "name": "camName", "description": "Camera name to select, HD Camera" },
+        { "type": "std::string", "name": "videoSize", "description": "Video size to select, 1280x720" }
+      ],
+      "description": "Selects a camera."
+    },
+    { "name": "VSDKClientConnect",
+      "return_type": "int",
+      "params": [
+        { "type": "std::string", "name": "rtspPath", "description": "RTSP path to select, rtsp://192.168.1.10:8554/mystream" }
+      ],
+      "description": "Starts streaming from the selected camera."
+    },
+    {
+      "name": "VSDKClientRegister",
+      "return_type": "int",
+      "params": [
+        { "type": "std::string", "name": "name", "description": "Registry name" },
+        { "type": "std::string", "name": "title", "description": "Registry title" },
+        { "type": "std::vector<std::string>", "name": "photoFiles", "description": "List of photo file paths" }
+      ],
+      "description": "Registers a new joiner with the conference."
     }
   ]
 }
